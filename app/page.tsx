@@ -27,7 +27,7 @@ export default function HomePage() {
           <div className="hero-inner">
             <div className="eyebrow">Five chips in a row. Two sequences to win.</div>
             <h1 className="hero-title">Quintet</h1>
-            <p className="hero-sub">A modern take on the classic strategy card game. Place chips with the cards you draw, race to form sequences, win the table.</p>
+            <p className="hero-sub">A modern take on the classic strategy card game. Play a card, place a chip, and be the first to form five in a row.</p>
             <div className="hero-cta">
               <Link href="/play" className="btn btn-primary btn-lg">Play Now</Link>
               <Link href="/how-to-play" className="btn btn-ghost btn-lg">How to play</Link>
