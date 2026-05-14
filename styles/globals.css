@@ -272,6 +272,26 @@ main { flex: 1; }
 .footer > div a { color: var(--text-dim); font-size: 14px; }
 .footer > div a:hover { color: var(--text); }
 
+/* ─── 404 ─── */
+.not-found {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 80px 32px;
+}
+.not-found-code {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(96px, 18vw, 180px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(226,179,64,0.35);
+  margin-bottom: 24px;
+  user-select: none;
+}
+.not-found h1 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600; margin: 0 0 12px; }
+.not-found p { color: var(--text-dim); font-size: 17px; margin: 0 0 36px; }
+.not-found-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
 /* ─── Generic page hero & panels ─── */
 .page-hero {
   padding: 80px 80px 40px; max-width: 980px; margin: 0 auto; text-align: center;
