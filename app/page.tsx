@@ -4,7 +4,6 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { HeroBoard } from '@/components/HeroBoard';
 import { FeatureCard } from '@/components/ui/FeatureCard';
-import { Panel } from '@/components/ui/Panel';
 
 export const metadata: Metadata = {
   title: 'Quintet — Five Chips in a Row',

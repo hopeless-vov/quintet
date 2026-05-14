@@ -14,7 +14,7 @@ import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { newGameState } from '@/lib/game/engine';
 import { legalMoves, isJack } from '@/lib/game/moves';
 import { isDeadCard } from '@/lib/game/engine';
-import type { RoomRecord, GameState, LegalMove } from '@/types/game';
+import type { RoomRecord, LegalMove } from '@/types/game';
 import Link from 'next/link';
 
 function loadRoom(id: string): RoomRecord | null {

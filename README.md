@@ -17,6 +17,7 @@ A modern, browser-based multiplayer card-placement game. Place chips on a 10×10
 | Fonts | Fraunces (headings) + Inter (body) + JetBrains Mono (IDs) |
 | Real-time | [Ably](https://ably.com) — pub/sub channels for game events and lobby discovery |
 | State | Zustand |
+| Testing | Vitest + @vitest/coverage-v8 |
 | Package manager | npm |
 
 ---
@@ -25,14 +26,18 @@ A modern, browser-based multiplayer card-placement game. Place chips on a 10×10
 
 ```
 app/                        # Next.js App Router pages
-  layout.tsx                # Root layout: fonts, global CSS, PageTransition wrapper
-  page.tsx                  # / — Home: hero, features, explainer
+  layout.tsx                # Root layout: fonts, global CSS, metadata, PageTransition
+  page.tsx                  # / — Home: hero, features, explainer, JSON-LD
   how-to-play/page.tsx      # /how-to-play — step-by-step guide
   rules/page.tsx            # /rules — official rules
   play/page.tsx             # /play — Create / Join hub
   create-room/page.tsx      # /create-room — room creation form
   join-room/page.tsx        # /join-room — join by ID or live room list
   room/[id]/page.tsx        # /room/[id] — waiting lobby → live game
+  robots.ts                 # /robots.txt — search engine crawl rules
+  sitemap.ts                # /sitemap.xml — all public pages
+  manifest.ts               # /manifest.webmanifest — PWA manifest
+  opengraph-image.tsx       # /opengraph-image — auto-generated OG image (1200×630)
   api/
     ably-token/route.ts     # Serverless route: issues Ably token (keeps API key server-side)
 
@@ -83,6 +88,10 @@ lib/
     moves.ts                # legalMoves(), isTwoEyedJack(), isOneEyedJack()
     sequences.ts            # detectSequences() — 5-in-a-row in 4 directions
     engine.ts               # newGameState(), applyMove(), discardDead(), isDeadCard()
+    __tests__/
+      moves.test.ts         # 16 tests: isJack, isTwoEyedJack, isOneEyedJack, legalMoves
+      sequences.test.ts     # 8 tests: horizontal, vertical, diagonal, color isolation, free corners
+      engine.test.ts        # 20 tests: newGameState, isDeadCard, applyMove, discardDead
   ably.ts                   # getAblyClient() singleton + channel name helpers
 
 types/
@@ -90,6 +99,15 @@ types/
 
 styles/
   globals.css               # Full design system: CSS vars, all component classes, animations
+
+.github/
+  workflows/
+    ci.yml                  # GitHub Actions: lint + test on every push and PR
+
+.husky/
+  pre-commit                # Runs lint-staged before every commit
+
+vercel.json                 # Override build command: lint → test → next build
 ```
 
 ---
@@ -121,10 +139,35 @@ Guests never write game state directly — they only publish move intents and ap
 | `game:state` | host → all | full `GameState` (after each mutation) |
 
 ### Game logic (pure functions, `lib/game/`)
-All game logic is implemented as pure TypeScript functions with no side effects — easy to unit test and reuse anywhere. The board layout uses a seeded shuffle so every client builds an identical 10×10 grid without coordination.
+All game logic is implemented as pure TypeScript functions with no side effects. The board layout uses a seeded shuffle so every client builds an identical 10×10 grid without coordination. All functions are unit-tested with Vitest (84% statement coverage).
 
 ### Persistence
 Room records are stored in `localStorage` (`seq:room:{id}`). Player name is stored at `seq:name`. There is no server-side database.
+
+---
+
+## Quality Gates
+
+Three layers of automated checks protect the codebase:
+
+| Layer | Trigger | Checks |
+|---|---|---|
+| **Husky** | `git commit` | ESLint on staged files (lint-staged) |
+| **GitHub Actions** | `git push` / pull request | ESLint + Vitest (full suite + coverage) |
+| **Vercel** | deployment | ESLint + Vitest + `next build` |
+
+A commit, PR merge, or deploy is blocked if any check fails.
+
+---
+
+## SEO
+
+- Per-page `<title>` and `<meta description>` via Next.js Metadata API
+- Auto-generated Open Graph image (`/opengraph-image`) — 1200×630 PNG
+- `robots.txt` — blocks `/room/*` (private game rooms) and `/api/*`
+- `sitemap.xml` — all public pages with priority and change frequency
+- JSON-LD structured data on homepage (`WebSite` + `SoftwareApplication` schemas)
+- Web App Manifest for PWA install support
 
 ---
 
@@ -144,7 +187,7 @@ Design tokens live in `:root` in `styles/globals.css`:
 
 Fonts: **Fraunces** (headings/brand) · **Inter** (body) · **JetBrains Mono** (room IDs/code)
 
-Animations defined: `pulseLegal`, `chipDrop`, `heroFloat`, `logPulse`, `pageEnter`, `pulse` (via `--animate-pulse`).
+Animations: `pulseLegal`, `chipDrop`, `heroFloat`, `logPulse`, `brandPulse`, `pageEnter`.
 
 ---
 
@@ -162,8 +205,8 @@ npm install
 
 # Configure environment
 cp .env.example .env.local
-# Add your Ably key:
 # ABLY_API_KEY=your.key:here
+# NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # Start dev server
 npm run dev
@@ -175,7 +218,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Variable | Required | Description |
 |---|---|---|
-| `ABLY_API_KEY` | Yes | Server-side only. Used to issue restricted Ably tokens via `/api/ably-token`. Never exposed to the client. |
+| `ABLY_API_KEY` | Yes | Server-side only. Issues restricted Ably tokens via `/api/ably-token`. Never exposed to the client. |
+| `NEXT_PUBLIC_APP_URL` | Yes | Production URL. Used in sitemap, robots.txt, and OG metadata. |
 
 ---
 
@@ -185,19 +229,22 @@ Open [http://localhost:3000](http://localhost:3000).
 - On your turn: play a card → place a chip on the matching board space → draw a new card
 - **Two-eyed Jacks (J♦ J♣):** wild — place a chip anywhere
 - **One-eyed Jacks (J♥ J♠):** anti-wild — remove an opponent's chip (not from completed sequences)
-- **Dead cards:** if both spaces for your card are occupied, discard it for a free redraw
+- **Dead cards:** if all matching spaces are occupied, discard for a free redraw
 - **Corners** are free wild spaces for all players
-- **Win:** 2 sequences for 2-player games; 1 sequence for 3- and 4-player games
+- **Win:** 2 sequences for 2-player · 1 sequence for 3- and 4-player games
 
 ---
 
 ## Scripts
 
 ```bash
-npm run dev      # Start development server (port 3000)
-npm run build    # Production build
-npm run start    # Start production server
-npm run lint     # ESLint
+npm run dev           # Start development server (port 3000)
+npm run build         # Production build
+npm run start         # Start production server
+npm run lint          # ESLint across the whole project
+npm run test          # Vitest in watch mode
+npm run test:run      # Vitest single run
+npm run test:coverage # Vitest with v8 coverage report
 ```
 
 ---

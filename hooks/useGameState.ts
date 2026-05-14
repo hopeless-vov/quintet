@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { GameState, AblyMovePayload, AblyDiscardPayload } from '@/types/game';
 import { applyMove, discardDead } from '@/lib/game/engine';
 import { useAblyRoom } from './useAblyRoom';

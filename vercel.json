@@ -1,0 +1,3 @@
+{
+  "buildCommand": "npm run lint && npm run test:run && next build"
+}
