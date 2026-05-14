@@ -1,6 +1,29 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
+import { Fraunces, Inter, JetBrains_Mono } from 'next/font/google';
 import { PageTransition } from '@/components/PageTransition';
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  axes: ['opsz'],
+  variable: '--font-fraunces',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['500', '700'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://quintet-game.com';
 
@@ -39,15 +62,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
         <meta name="theme-color" content="#0c2a1c" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body><PageTransition>{children}</PageTransition></body>
     </html>
