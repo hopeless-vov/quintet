@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import type Ably from 'ably';
 import { getAblyClient, roomChannelName, LOBBY_CHANNEL } from '@/lib/ably';
-import type { GameState, AblyMovePayload, AblyDiscardPayload, AblyRoomPing } from '@/types/game';
+import type { GameState, AblyMovePayload, AblyDiscardPayload, AblyRoomPing, RoomRecord } from '@/types/game';
 
 type RoomEventHandlers = {
   onPlayerJoined?: (name: string) => void;
@@ -12,6 +12,8 @@ type RoomEventHandlers = {
   onGameState?: (state: GameState) => void;
   onMove?: (payload: AblyMovePayload) => void;
   onDiscard?: (payload: AblyDiscardPayload) => void;
+  onRoomRequest?: () => void;
+  onRoomInfo?: (room: RoomRecord) => void;
 };
 
 export function useAblyRoom(roomId: string, handlers: RoomEventHandlers) {
@@ -30,6 +32,8 @@ export function useAblyRoom(roomId: string, handlers: RoomEventHandlers) {
     channel.subscribe('game:state', (msg) => handlersRef.current.onGameState?.(msg.data));
     channel.subscribe('game:move', (msg) => handlersRef.current.onMove?.(msg.data));
     channel.subscribe('game:discard', (msg) => handlersRef.current.onDiscard?.(msg.data));
+    channel.subscribe('room:request', () => handlersRef.current.onRoomRequest?.());
+    channel.subscribe('room:info', (msg) => handlersRef.current.onRoomInfo?.(msg.data));
 
     return () => {
       channel.unsubscribe();

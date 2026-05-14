@@ -51,13 +51,41 @@ export default function JoinRoomPage() {
     if (!name.trim()) { setError('Please enter your name'); return; }
     const target = (roomId || selectedId || '').trim();
     if (!target) { setError('Enter a room ID or pick one below'); return; }
-    const room = loadRoom(target);
-    if (!room) { setError('Room not found'); return; }
-    if (room.players.length >= room.maxPlayers) { setError('Room is full'); return; }
-    if (!room.players.some(p => p.name === name.trim())) {
-      room.players.push({ name: name.trim(), host: false });
-      saveRoom(room);
+
+    // If we received this room via Ably lobby ping, build a RoomRecord from it
+    const ping = rooms.find(r => r.roomId === target);
+    if (ping) {
+      if (ping.playerNames.length >= ping.maxPlayers) { setError('Room is full'); return; }
+      const built: RoomRecord = {
+        id: ping.roomId,
+        hostName: ping.hostName,
+        mode: 'individual',
+        maxPlayers: ping.maxPlayers,
+        created: Date.now(),
+        players: ping.playerNames.map((n, i) => ({ name: n, host: i === 0 })),
+        status: ping.status,
+      };
+      if (!built.players.some(p => p.name === name.trim())) {
+        built.players.push({ name: name.trim(), host: false });
+      }
+      saveRoom(built);
+      router.push(`/room/${target}`);
+      return;
     }
+
+    // Fallback: try localStorage (same-device host scenario)
+    const room = loadRoom(target);
+    if (room) {
+      if (room.players.length >= room.maxPlayers) { setError('Room is full'); return; }
+      if (!room.players.some(p => p.name === name.trim())) {
+        room.players.push({ name: name.trim(), host: false });
+        saveRoom(room);
+      }
+      router.push(`/room/${target}`);
+      return;
+    }
+
+    // No local data — navigate anyway; the room page will request info from host via Ably
     router.push(`/room/${target}`);
   }
 

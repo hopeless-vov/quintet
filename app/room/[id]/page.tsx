@@ -30,27 +30,61 @@ function getMyName(): string {
   return localStorage.getItem('seq:name') ?? '';
 }
 
+const CONNECT_TIMEOUT_MS = 8000;
+const CONNECT_RETRY_MS = 1500;
+
 export default function RoomPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: roomId } = use(params);
   const router = useRouter();
   const myName = getMyName();
 
   const [room, setRoom] = useState<RoomRecord | null>(null);
+  const [connecting, setConnecting] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [showWin, setShowWin] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const { copied, copy } = useCopyToClipboard();
 
   const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const connectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const publishRef = useRef<((event: string, data: unknown) => void) | null>(null);
 
   useEffect(() => {
     const r = loadRoom(roomId);
-    if (r && !r.players.some(p => p.name === myName)) {
-      r.players.push({ name: myName, host: false });
-      saveRoom(r);
+    if (r) {
+      if (!r.players.some(p => p.name === myName)) {
+        r.players.push({ name: myName, host: false });
+        saveRoom(r);
+      }
+      setRoom(r);
+    } else {
+      setConnecting(true);
     }
-    setRoom(r);
   }, [roomId, myName]);
+
+  // When connecting (no local room), request room info from host via Ably
+  useEffect(() => {
+    if (!connecting) return;
+
+    function requestInfo() {
+      publishRef.current?.('room:request', {});
+    }
+
+    // First attempt after Ably has had a moment to connect
+    const firstAttempt = setTimeout(requestInfo, 600);
+    retryIntervalRef.current = setInterval(requestInfo, CONNECT_RETRY_MS);
+    connectTimerRef.current = setTimeout(() => {
+      clearInterval(retryIntervalRef.current!);
+      setConnecting(false); // give up → show "not found"
+    }, CONNECT_TIMEOUT_MS);
+
+    return () => {
+      clearTimeout(firstAttempt);
+      clearInterval(retryIntervalRef.current!);
+      clearTimeout(connectTimerRef.current!);
+    };
+  }, [connecting]);
 
   const isHost = room?.players[0]?.name === myName;
 
@@ -59,6 +93,9 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     isHost,
     myName,
   });
+
+  // Keep publishRef in sync so the connecting effect can call publish
+  useEffect(() => { publishRef.current = publish; });
 
   useAblyRoom(roomId, {
     onPlayerJoined: (name) => {
@@ -75,6 +112,28 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         const next = { ...prev, players: prev.players.filter(p => p.name !== name) };
         saveRoom(next);
         return next;
+      });
+    },
+    // Host responds to room:request by publishing room:info
+    onRoomRequest: () => {
+      if (!isHost) return;
+      setRoom(current => {
+        if (current) publish('room:info', current);
+        return current;
+      });
+    },
+    // Guest receives room:info and builds local room record
+    onRoomInfo: (infoRoom) => {
+      setRoom(current => {
+        if (current) return current; // already resolved
+        if (!infoRoom.players.some(p => p.name === myName)) {
+          infoRoom.players.push({ name: myName, host: false });
+        }
+        saveRoom(infoRoom);
+        clearInterval(retryIntervalRef.current!);
+        clearTimeout(connectTimerRef.current!);
+        setConnecting(false);
+        return infoRoom;
       });
     },
   });
@@ -165,9 +224,19 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
           <Link href="/" className="brand">Quintet</Link>
         </header>
         <div className="room-empty">
-          <h2>Room not found</h2>
-          <p>This room doesn&apos;t exist or has expired.</p>
-          <Link href="/play" className="btn btn-primary">Back to Play</Link>
+          {connecting ? (
+            <>
+              <div className="connecting-spinner" />
+              <h2>Connecting…</h2>
+              <p>Looking for the room host. This may take a moment.</p>
+            </>
+          ) : (
+            <>
+              <h2>Room not found</h2>
+              <p>This room doesn&apos;t exist, has expired, or the host is offline.</p>
+              <Link href="/play" className="btn btn-primary">Back to Play</Link>
+            </>
+          )}
         </div>
       </div>
     );
