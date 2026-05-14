@@ -1,4 +1,6 @@
-# Quintet
+# 🟡 Quintet
+
+**[quintet-game.com](https://quintet-game.com)**
 
 A modern, browser-based multiplayer card-placement game. Place chips on a 10×10 board using playing cards from your hand. First to form the required number of five-in-a-row sequences wins.
 
@@ -197,3 +199,9 @@ npm run build    # Production build
 npm run start    # Start production server
 npm run lint     # ESLint
 ```
+
+---
+
+## License
+
+[MIT](./LICENSE) © 2025 [Volodymyr Bondarenko](https://www.linkedin.com/in/vov-bndrnk/)
