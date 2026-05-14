@@ -114,6 +114,15 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         return next;
       });
     },
+    // Sync room status to 'playing' when game starts (guest side)
+    onGameStarted: () => {
+      setRoom(prev => {
+        if (!prev || prev.status === 'playing') return prev;
+        const next = { ...prev, status: 'playing' as const };
+        saveRoom(next);
+        return next;
+      });
+    },
     // Host responds to room:request by publishing room:info
     onRoomRequest: () => {
       if (!isHost) return;
@@ -242,7 +251,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     );
   }
 
-  const isPlaying = room.status === 'playing' && !!gameState;
+  const isPlaying = !!gameState;
 
   return (
     <div className="room-wrap">
