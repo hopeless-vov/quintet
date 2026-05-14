@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'How to Play',
+  description: 'Learn how to play Quintet in minutes. Step-by-step guide covering card play, chip placement, Jacks, sequences, and win conditions.',
+  alternates: { canonical: '/how-to-play' },
+};
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Panel } from '@/components/ui/Panel';

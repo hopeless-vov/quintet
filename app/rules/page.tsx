@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Rules',
+  description: 'Complete official rules for Quintet — hand size, card play, two-eyed and one-eyed Jacks, dead cards, sequence formation, and winning.',
+  alternates: { canonical: '/rules' },
+};
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Panel } from '@/components/ui/Panel';

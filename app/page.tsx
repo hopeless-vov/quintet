@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { HeroBoard } from '@/components/HeroBoard';
 import { FeatureCard } from '@/components/ui/FeatureCard';
 import { Panel } from '@/components/ui/Panel';
+
+export const metadata: Metadata = {
+  title: 'Quintet — Five Chips in a Row',
+  description: 'Play Quintet online — the strategic card-and-chip board game. Form five in a row, earn two sequences, win the table. Free, browser-based, real-time multiplayer for 2–4 players.',
+  alternates: { canonical: '/' },
+};
 
 function UsersIcon() {
   return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 20c0-2.5 2-4.5 5-4.5"/></svg>;
@@ -18,9 +25,40 @@ function GlobeIcon() {
   return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>;
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: 'Quintet',
+      url: 'https://quintet.game',
+      description: 'Free browser-based multiplayer card-and-chip strategy game.',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://quintet.game/join-room?q={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: 'Quintet',
+      applicationCategory: 'GameApplication',
+      operatingSystem: 'Web Browser',
+      url: 'https://quintet.game',
+      description: 'Play Quintet — a strategic card-and-chip board game. Form five chips in a row to earn a sequence. First to two sequences wins. Free, real-time multiplayer for 2–4 players.',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      author: { '@type': 'Person', name: 'Volodymyr Bondarenko', url: 'https://www.linkedin.com/in/vov-bndrnk/' },
+    },
+  ],
+};
+
 export default function HomePage() {
   return (
     <div className="shell">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       <main>
         <section className="hero">

@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Play',
+  description: 'Start a game of Quintet now. Create a private room and invite friends, or jump into any open room. No account required.',
+  alternates: { canonical: '/play' },
+};
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MiniBoard } from '@/components/MiniBoard';
