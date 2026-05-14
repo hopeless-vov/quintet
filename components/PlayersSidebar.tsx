@@ -57,7 +57,7 @@ export function PlayersSidebar({ state, myIdx, selectedIdx, onSelectCard, onDisc
         </ul>
       </div>
 
-      <div className="panel-side">
+      <div className="panel-side hand-panel">
         <h3>{isMyTurn ? 'Your turn' : `${current.name}'s turn`}</h3>
         {!isMyTurn && <div className="muted small">Waiting for their move…</div>}
 
