@@ -38,8 +38,20 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const router = useRouter();
   const myName = getMyName();
 
-  const [room, setRoom] = useState<RoomRecord | null>(null);
-  const [connecting, setConnecting] = useState(false);
+  const [room, setRoom] = useState<RoomRecord | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const r = loadRoom(roomId);
+    if (!r) return null;
+    if (!r.players.some(p => p.name === myName)) {
+      r.players.push({ name: myName, host: false });
+      saveRoom(r);
+    }
+    return r;
+  });
+  const [connecting, setConnecting] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return loadRoom(roomId) === null;
+  });
   const [showRules, setShowRules] = useState(false);
   const [showWin, setShowWin] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -49,19 +61,6 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
   const connectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const publishRef = useRef<((event: string, data: unknown) => void) | null>(null);
-
-  useEffect(() => {
-    const r = loadRoom(roomId);
-    if (r) {
-      if (!r.players.some(p => p.name === myName)) {
-        r.players.push({ name: myName, host: false });
-        saveRoom(r);
-      }
-      setRoom(r);
-    } else {
-      setConnecting(true);
-    }
-  }, [roomId, myName]);
 
   // When connecting (no local room), request room info from host via Ably
   useEffect(() => {
@@ -92,6 +91,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     roomId,
     isHost,
     myName,
+    onWin: () => setShowWin(true),
   });
 
   // Keep publishRef in sync so the connecting effect can call publish
@@ -169,12 +169,6 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     pingIntervalRef.current = setInterval(ping, 30_000);
     return () => { if (pingIntervalRef.current) clearInterval(pingIntervalRef.current); };
   }, [isHost, room?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (gameState?.winner !== null && gameState?.winner !== undefined) {
-      setShowWin(true);
-    }
-  }, [gameState?.winner]);
 
   function handleStart() {
     if (!room) return;

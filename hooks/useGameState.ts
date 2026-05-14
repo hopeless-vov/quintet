@@ -13,9 +13,10 @@ type UseGameStateOptions = {
   roomId: string;
   isHost: boolean;
   myName: string;
+  onWin?: () => void;
 };
 
-export function useGameState({ roomId, isHost, myName }: UseGameStateOptions) {
+export function useGameState({ roomId, isHost, myName, onWin }: UseGameStateOptions) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const gameStateRef = useRef<GameState | null>(null);
 
@@ -23,10 +24,12 @@ export function useGameState({ roomId, isHost, myName }: UseGameStateOptions) {
     onGameStarted: (state) => {
       gameStateRef.current = state;
       setGameState(state);
+      if (state.winner != null) onWin?.();
     },
     onGameState: (state) => {
       gameStateRef.current = state;
       setGameState(state);
+      if (state.winner != null) onWin?.();
     },
     onMove: isHost ? (payload: AblyMovePayload) => {
       const current = gameStateRef.current;
@@ -36,6 +39,7 @@ export function useGameState({ roomId, isHost, myName }: UseGameStateOptions) {
       if (result.ok) {
         gameStateRef.current = next;
         setGameState(next);
+        if (next.winner != null) onWin?.();
         publish('game:state', next);
       }
     } : undefined,

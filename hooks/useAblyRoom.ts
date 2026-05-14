@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import type Ably from 'ably';
 import { getAblyClient, roomChannelName, LOBBY_CHANNEL } from '@/lib/ably';
 import type { GameState, AblyMovePayload, AblyDiscardPayload, AblyRoomPing, RoomRecord } from '@/types/game';
@@ -19,7 +19,7 @@ type RoomEventHandlers = {
 export function useAblyRoom(roomId: string, handlers: RoomEventHandlers) {
   const channelRef = useRef<Ably.RealtimeChannel | null>(null);
   const handlersRef = useRef(handlers);
-  handlersRef.current = handlers;
+  useLayoutEffect(() => { handlersRef.current = handlers; });
 
   useEffect(() => {
     const client = getAblyClient();
@@ -49,7 +49,7 @@ export function useAblyRoom(roomId: string, handlers: RoomEventHandlers) {
 
 export function useAblyLobby(onPing: (ping: AblyRoomPing) => void) {
   const onPingRef = useRef(onPing);
-  onPingRef.current = onPing;
+  useLayoutEffect(() => { onPingRef.current = onPing; });
 
   useEffect(() => {
     const client = getAblyClient();
