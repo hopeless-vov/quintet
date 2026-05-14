@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import '../styles/globals.css';
 import { PageTransition } from '@/components/PageTransition';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://quintet.game';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://quintet-game.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),

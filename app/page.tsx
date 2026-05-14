@@ -30,11 +30,11 @@ const jsonLd = {
     {
       '@type': 'WebSite',
       name: 'Quintet',
-      url: 'https://quintet.game',
+      url: 'https://quintet-game.com',
       description: 'Free browser-based multiplayer card-and-chip strategy game.',
       potentialAction: {
         '@type': 'SearchAction',
-        target: 'https://quintet.game/join-room?q={search_term_string}',
+        target: 'https://quintet-game.com/join-room?q={search_term_string}',
         'query-input': 'required name=search_term_string',
       },
     },
@@ -43,7 +43,7 @@ const jsonLd = {
       name: 'Quintet',
       applicationCategory: 'GameApplication',
       operatingSystem: 'Web Browser',
-      url: 'https://quintet.game',
+      url: 'https://quintet-game.com',
       description: 'Play Quintet — a strategic card-and-chip board game. Form five chips in a row to earn a sequence. First to two sequences wins. Free, real-time multiplayer for 2–4 players.',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       author: { '@type': 'Person', name: 'Volodymyr Bondarenko', url: 'https://www.linkedin.com/in/vov-bndrnk/' },
