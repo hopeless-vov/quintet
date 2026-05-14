@@ -5,8 +5,7 @@ import { PageTransition } from '@/components/PageTransition';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  axes: ['opsz'],
+  weight: 'variable',
   variable: '--font-fraunces',
   display: 'swap',
 });
