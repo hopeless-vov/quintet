@@ -30,7 +30,7 @@ export function RulesModal({ onClose }: Props) {
             <p><b>Objective.</b> Form sequences of 5 chips in a row on the board — horizontal, vertical, or diagonal.</p>
             <p><b>Setup.</b> Each player receives 7 cards (or 6 in a 4-player game) and a chip color.</p>
             <p><b>Turn.</b> Play a card from your hand, place a chip on the matching board space, draw a fresh card. The four corners are FREE wild spaces.</p>
-            <p><b>Winning.</b> The first to form the required sequences wins. 2 sequences in a 2- or 4-player game, 1 sequence in a 3-player game.</p>
+            <p><b>Winning.</b> The first to form the required sequences wins. 2 sequences in a 2-player game, 1 sequence in a 3- or 4-player game.</p>
           </div>
         )}
         {tab === 'cards' && (

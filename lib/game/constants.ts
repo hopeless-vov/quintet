@@ -3,7 +3,7 @@ import type { Suit, Rank, ChipColor } from '@/types/game';
 export const BOARD_SIZE = 10;
 export const HAND_SIZE_DEFAULT = 7;
 export const HAND_SIZE_FOUR_PLAYER = 6;
-export const SEQUENCES_TO_WIN: Record<number, number> = { 2: 2, 3: 1, 4: 2 };
+export const SEQUENCES_TO_WIN: Record<number, number> = { 2: 2, 3: 1, 4: 1 };
 
 export const SUITS: Suit[] = ['spades', 'hearts', 'diamonds', 'clubs'];
 export const RANKS: Rank[] = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Q', 'K'];

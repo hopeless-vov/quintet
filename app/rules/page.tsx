@@ -21,7 +21,7 @@ export default function RulesPage() {
             <ul className="bullets">
               <li>Individual play (2 players): 2 sequences to win</li>
               <li>Individual play (3 players): 1 sequence to win</li>
-              <li>Individual play (4 players): 2 sequences to win</li>
+              <li>Individual play (4 players): 1 sequence to win</li>
             </ul>
             <h3>Valid sequences</h3>
             <ul className="bullets">

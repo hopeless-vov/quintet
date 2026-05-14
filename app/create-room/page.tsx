@@ -51,7 +51,7 @@ export default function CreateRoomPage() {
   const seqNote: Record<number, string> = {
     2: '2-player games need 2 sequences to win.',
     3: '3-player games need 1 sequence to win.',
-    4: '4-player games need 2 sequences to win.',
+    4: '4-player games need 1 sequence to win.',
   };
 
   return (

@@ -62,7 +62,7 @@ export default function HowToPlayPage() {
           </Panel>
 
           <Panel title="Winning">
-            <p>The first player to form <b>two complete sequences</b> wins the game (one sequence in a 3-player game). A sequence is exactly five chips of your color in an unbroken horizontal, vertical, or diagonal line. Sequences may share <b>at most one chip</b> as an endpoint.</p>
+            <p>The first player to form the required number of sequences wins: <b>2 sequences</b> in a 2-player game, <b>1 sequence</b> in a 3- or 4-player game. A sequence is exactly five chips of your color in an unbroken horizontal, vertical, or diagonal line. Sequences may share <b>at most one chip</b> as an endpoint.</p>
           </Panel>
 
           <div className="cta-row">

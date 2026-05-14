@@ -185,7 +185,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - **One-eyed Jacks (J♥ J♠):** anti-wild — remove an opponent's chip (not from completed sequences)
 - **Dead cards:** if both spaces for your card are occupied, discard it for a free redraw
 - **Corners** are free wild spaces for all players
-- **Win:** 2 sequences for 2- and 4-player games; 1 sequence for 3-player games
+- **Win:** 2 sequences for 2-player games; 1 sequence for 3- and 4-player games
 
 ---
 
