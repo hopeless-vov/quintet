@@ -12,7 +12,7 @@ import { useAblyRoom, publishLobbyPing } from '@/hooks/useAblyRoom';
 import { useGameState } from '@/hooks/useGameState';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { newGameState } from '@/lib/game/engine';
-import { legalMoves } from '@/lib/game/moves';
+import { legalMoves, isJack } from '@/lib/game/moves';
 import { isDeadCard } from '@/lib/game/engine';
 import type { RoomRecord, GameState, LegalMove } from '@/types/game';
 import Link from 'next/link';
@@ -210,6 +210,14 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     return legalMoves(gameState.board, me.hand[selectedIdx], gameState.chips, me.color);
   }, [gameState, isMyTurn, selectedIdx, myPlayerIdx]);
 
+  // Highlight only for Jacks — regular cards get no board hints
+  const legalForBoard: LegalMove[] = useMemo(() => {
+    if (!gameState || !isMyTurn || selectedIdx === null) return [];
+    const me = gameState.players[myPlayerIdx];
+    if (!me || !me.hand[selectedIdx]) return [];
+    return isJack(me.hand[selectedIdx]) ? legal : [];
+  }, [gameState, isMyTurn, selectedIdx, myPlayerIdx, legal]);
+
   function handleCellClick(r: number, c: number) {
     if (!isMyTurn || selectedIdx === null) return;
     const move = legal.find(m => m.r === r && m.c === c);
@@ -274,7 +282,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
         <div className="game">
           <GameBoard
             state={gameState}
-            legal={legal}
+            legal={legalForBoard}
             onCellClick={handleCellClick}
           />
           <PlayersSidebar

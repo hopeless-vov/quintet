@@ -34,7 +34,7 @@ export function PlayersSidebar({ state, myIdx, selectedIdx, onSelectCard, onDisc
         ? "Anti-wild — pick an opponent's chip to remove."
         : null;
     }
-    return 'Pick a highlighted matching space.';
+    return 'Click on a matching space on the board.';
   }
 
   const actionHint = getActionHint();
